@@ -32,7 +32,9 @@ odoo.define('payment.acquirer.midtrans', function(require)
             $acquirer = $btn.closest('div.oe_sale_acquirer_button,div.oe_quote_acquirer_button,div.o_website_payment_new_payment'),
             acquirer_id = $("#acquirer_midtrans").val() || $acquirer.data('id') || $acquirer.data('acquirer_id');
 
-
+        var access_token = $("input[name='access_token']").val() || $("input[name='token']").val();
+        console.log('==access_token');
+        console.log(access_token);
         
         if (!acquirer_id)
         {
@@ -74,10 +76,11 @@ odoo.define('payment.acquirer.midtrans', function(require)
             {
                 console.log('===o_website_payment !0');
                 promise = session.rpc(
-                    '/shop/payment/transaction/' + acquirer_id,
+                    '/shop/payment/transaction/' + formData['order_id'],
                     {
                         so_id: formData['order_id'],
                         acquirer_id: acquirer_id,
+                        access_token: access_token,
                     },
                     )
 

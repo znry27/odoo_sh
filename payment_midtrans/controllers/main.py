@@ -8,6 +8,7 @@ from odoo.tools import html_escape
 import pprint
 import requests
 import werkzeug
+import base64
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,28 @@ def _prune_dict(data):
 
 
 class MidtransController(http.Controller):
+
+    @http.route('/midtrans/get_snap_js', auth='user', type='json')
+    def get_snap_js(self, **post):
+        acquirer = request.env['payment.acquirer'].sudo().search([('provider','=','midtrans')],limit=1)
+        
+        response = {
+            'production': '0',
+            'client_key': 'sandbox'
+        }
+
+        if acquirer:
+            response = {
+                'production': '0' if acquirer.environment == 'test' else '1',
+                'client_key': acquirer.midtrans_client_key
+            }
+        else:
+            raise ValidationError('acquirer_id is required.')
+
+        return response
+
+
+
 
     @http.route('/midtrans/get_token', auth='user', type='json')
     def get_token(self, **post):
@@ -65,8 +88,14 @@ class MidtransController(http.Controller):
             'return_url': return_url,
         }
 
+        AUTH_STRING = base64.b64encode((acquirer.midtrans_server_key + ':').encode('utf-8'))
+        
+
+        AUTH_STRING = 'Basic ' + str(AUTH_STRING)
         headers = {
             'accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': AUTH_STRING,
         }
         payload = {
             'transaction_details': {
@@ -98,6 +127,12 @@ class MidtransController(http.Controller):
         if resp.status_code >= 200 and resp.status_code < 300:
             reply = resp.json()
             response['snap_token'] = reply['token']
+            response['client_key'] = acquirer.midtrans_client_key
+
+            if acquirer.environment == 'test':
+                response['production'] = '0'
+            else:
+                response['production'] = '1'
 
         elif resp.text:
             reply = resp.json()

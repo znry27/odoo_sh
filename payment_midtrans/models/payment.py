@@ -37,10 +37,10 @@ class AcquirerMidtrans(models.Model):
     @api.multi
     def midtrans_form_generate_values(self, values):
         values['client_key'] = self.midtrans_client_key
-        if self.environment == 'test':
-            values['snap_js_url'] = 'https://app.sandbox.midtrans.com/snap/snap.js'
-        else:
-            values['snap_js_url'] = 'https://app.midtrans.com/snap/snap.js'
+        # if self.environment == 'test':
+        #     values['snap_js_url'] = 'https://app.sandbox.midtrans.com/snap/snap.js'
+        # else:
+        #     values['snap_js_url'] = 'https://app.midtrans.com/snap/snap.js'
 
         if not 'return_url' in values:
             values['return_url'] = '/'

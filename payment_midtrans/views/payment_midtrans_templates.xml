@@ -33,6 +33,8 @@
         <input type="hidden" name="billing_partner_city"
             t-att-value="billing_partner_city"/>
 
+        <input id="acquirer_midtrans" type='hidden' name="acquirer" t-att-value="acquirer.id"/>
+
         <button type="submit" width="100px" t-att-class="submit_class" id="midtrans-payment-button">
           <img t-if="not submit_txt" src="/payment_midtrans/static/src/img/midtrans_icon.png"/>
           <span t-if="submit_txt"><t t-esc="submit_txt"/> <span class="fa fa-long-arrow-right"/></span>

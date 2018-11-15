@@ -148,7 +148,7 @@ class MidtransController(http.Controller):
         return response
 
 
-    @http.route('/midtrans/validate', auth='user', type='json')
+    @http.route('/midtrans/validate', auth='public', type='json')
     def payment_validate(self, **post):
         logger.error(repr(post))
 
@@ -181,7 +181,7 @@ class MidtransController(http.Controller):
             order.write({'state': 'sale'})
 
 
-    @http.route('/midtrans/notification', auth='none', csrf=False, type='json')
+    @http.route('/midtrans/notification', auth='public', csrf=False, type='json')
     def midtrans_notification(self, **post):
         logger.error(repr(post))
 

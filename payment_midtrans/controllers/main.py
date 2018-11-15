@@ -22,7 +22,7 @@ def _prune_dict(data):
 
 class MidtransController(http.Controller):
 
-    @http.route('/midtrans/get_snap_js', auth='user', type='json')
+    @http.route('/midtrans/get_snap_js', auth='public', type='json')
     def get_snap_js(self, **post):
         acquirer = request.env['payment.acquirer'].sudo().search([('provider','=','midtrans')],limit=1)
         
@@ -44,7 +44,7 @@ class MidtransController(http.Controller):
 
 
 
-    @http.route('/midtrans/get_token', auth='user', type='json')
+    @http.route('/midtrans/get_token', auth='public', type='json')
     def get_token(self, **post):
         acquirer_id = post.get('acquirer_id')
         if not acquirer_id:

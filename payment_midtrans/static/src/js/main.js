@@ -23,18 +23,18 @@ odoo.define('payment.acquirer.midtrans', function(require)
 
     });
 
-    function set_state_busy($el, is_busy)
+    function set_state_busy(is_busy)
     {
-        var $spin = $el.find('i.fa-spinner');
+        
         if (is_busy)
         {
-            $el.attr('disabled', 'disabled');
-            $spin.removeClass('hidden');
+            $.blockUI();
         }
         else
         {
-            $el.removeAttr('disabled');
-            $spin.addClass('hidden');
+            if ($.blockUI) {
+                $.unblockUI();
+            }
         }
     }
 
@@ -46,11 +46,14 @@ odoo.define('payment.acquirer.midtrans', function(require)
 
     function attach_event_listener(selector,e)
     {
+        
+
         var $btn = $(selector),
             $form = $btn.parents('form'),
             $acquirer = $btn.closest('div.oe_sale_acquirer_button,div.oe_quote_acquirer_button,div.o_website_payment_new_payment'),
             acquirer_id = $("#acquirer_midtrans").val() || $acquirer.data('id') || $acquirer.data('acquirer_id');
 
+        var access_token = $("input[name='access_token']").val() || $("input[name='token']").val();
                 
         
         if (!acquirer_id)
@@ -62,7 +65,7 @@ odoo.define('payment.acquirer.midtrans', function(require)
         
 
 
-        set_state_busy($btn, true);
+        set_state_busy(true);
             
             
         var promise,
@@ -93,6 +96,7 @@ odoo.define('payment.acquirer.midtrans', function(require)
                 {
                     so_id: formData['order_id'],
                     acquirer_id: acquirer_id,
+                    access_token: access_token,
                 },
                 )
 
@@ -115,11 +119,12 @@ odoo.define('payment.acquirer.midtrans', function(require)
                     if (response.snap_errors)
                     {
                         alert(response.snap_errors.join('\n'));
-                        set_state_busy($btn, false);
+                        set_state_busy(false);
                         return;
                     }
 
                     scriptTag.setAttribute('data-client-key', response.client_key);
+                    set_state_busy(false);
                     
                     snap.pay(response.snap_token,
                     {
@@ -161,13 +166,13 @@ odoo.define('payment.acquirer.midtrans', function(require)
                         },
                         onClose: function()
                         {
-                            set_state_busy($btn, false);
+                            set_state_busy(false);
                         },
                     });
                 },
                 function(error)
                 {
-                    set_state_busy($btn, false);
+                    set_state_busy(false);
                     console.log(error);
                 });
 
